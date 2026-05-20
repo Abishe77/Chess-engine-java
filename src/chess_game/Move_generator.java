@@ -250,4 +250,39 @@ public class Move_generator {
 		return possibilities;
 	}
 
+	public ArrayList<int[]> getMoves(Board board, int row, int col) {
+
+		// This method is piece specific move generation when a piece is selected it
+		// just returns the moves for that piece
+		ArrayList<int[]> piece_specific_possibilites = new ArrayList<>();
+		int temp = board.getPieceAt(row, col);
+		switch (Math.abs(temp)) {
+
+		case 1:
+			piece_specific_possibilites.addAll(pawnMoves(board, row, col));
+			break;
+
+		case 2:
+			piece_specific_possibilites.addAll(knightMoves(board, row, col));
+			break;
+
+		case 3:
+			piece_specific_possibilites.addAll(bishopMoves(board, row, col));
+			break;
+
+		case 4:
+			piece_specific_possibilites.addAll(rookMoves(board, row, col));
+			break;
+
+		case 5:
+			piece_specific_possibilites.addAll(queenMoves(board, row, col));
+			break;
+
+		case 6:
+			piece_specific_possibilites.addAll(kingMoves(board, row, col));
+			break;
+		}
+		return piece_specific_possibilites;
+	}
+
 }
