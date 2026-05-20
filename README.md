@@ -1,23 +1,36 @@
-# Chess engine in Java
+# Chess Engine in Java
 
-# Completed:
-1.Board representation
-2.Move generation for all pieces
-3.OOP refactor and optimization using vector/array offsets
+## Completed
 
-# Working on:
-1.Legal move validation
-2.Check/Checkmate detection
+1. Board representation  
+2. Move generation for all pieces  
+3. OOP refactor and optimization using vector/array offsets  
 
-# Future Goals:
-1.GUI
-2.Minimax AI (Alpha beta pruning)
-3.Move Optimization
+## Working On
 
-# Breakdown of each file
-1.Chess_engine.java : It contains my first raw procedural type of code including all together - board , pieces , move generation , testing branch
-2.Board.java : It contains the board of 8x8 chess board representation
-3.Piece.java: It contains all pieces (white and black) and have them arranged in the board using Board class
-4.Move_generator.java: (a)This contains all possible moves for all pieces - pawn , knight , bishop , rook , queen , king 
-                       (b) This is the optimized file where I used vector offsets instead of repeating while loops implementing DRY principle
-5.Test.java: It is the testing file where the whole code is tested
+1. Legal move validation  
+2. Check/checkmate detection  
+
+## Future Goals
+
+1. GUI  
+2. Minimax AI (Alpha-beta pruning)  
+3. Move optimization  
+
+## Breakdown of Each File
+
+1. Chess_engine.java  
+   - Contains the first raw procedural version including board, pieces, move generation, and testing.
+
+2. Board.java  
+   - Contains the 8x8 chess board representation.
+
+3. Piece.java  
+   - Contains all pieces (white and black) and board arrangement logic.
+
+4. Move_generator.java  
+   - Contains move generation logic for pawn, knight, bishop, rook, queen, and king.
+   - Optimized using vector offsets and DRY principle.
+
+5. Test.java  
+   - Testing file for validating engine behavior.
