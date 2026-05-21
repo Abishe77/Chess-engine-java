@@ -1,4 +1,4 @@
-# Chess Engine (Java) Built from Scratch
+# Chess Engine (Java) built from Scratch
 
 A lightweight, object-oriented chess backend engine written in Java. The engine manages board state representation, alternates player turns sequentially, and evaluates move safety using a simulated sandbox pipeline.
 
