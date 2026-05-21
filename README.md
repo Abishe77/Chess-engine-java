@@ -81,8 +81,5 @@ All logic was planned by hand before coding. Notebook photos covering board layo
 - Eclipse IDE
 - A notebook and a pen
   
-##  Design Blueprints & Hand-Drawn Logic
-* [View all original handwritten engineering notes and vector layout sheets directly in the repository gallery.](https://github.com/Abishe77/Chess-engine-java/tree/main/docs)
-
   
 
