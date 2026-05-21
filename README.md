@@ -1,4 +1,4 @@
-# Chess Engine — Java from scratch
+# Chess Engine — Java
 
 A scratch-built, object-oriented chess engine in Java. No libraries. No shortcuts. Pure logic.
 
