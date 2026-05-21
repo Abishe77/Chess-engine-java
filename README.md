@@ -1,30 +1,17 @@
-# Chess Engine in Java
+# Chess Engine (Java)
 
-## Completed
+A lightweight, object-oriented chess backend engine written in Java. The engine manages board state representation, alternates player turns sequentially, and evaluates move safety using a simulated sandbox pipeline.
 
-1. Board representation  
-2. Move generation for all pieces  
-3. OOP refactor and optimization using vector/array offsets  
+## Core Features
+* **Board State Matrix:** Built on a private 2D grid setup that handles piece tracking and coordinate validation.
+* **Ghost Simulation Board (`ghostCheck`):** Duplicates the live game board layout into an isolated sandbox to test-fire potential player moves.
+* **King Threat Radar:** Scans 8-directional sniper paths and knight jumping grids to ensure a player's move never leaves or puts their own King in check.
+* **Sequential Turn Handler:** Alternates player control seamlessly while blocking out-of-turn execution.
 
-## Working On
-
-1. Legal move validation  
-2. Check/checkmate detection  
-
-## Future Goals
-
-1. GUI  
-2. Minimax AI (Alpha-beta pruning)  
-3. Move optimization  
-
-## Breakdown of Each File
-
-1. Chess_engine.java  
-   - Contains the first raw procedural version including board, pieces, move generation, and testing.
-
-2. Board.java  
-   - Contains the 8x8 chess board representation.
-
+## Project Structure
+* `Board.java`: Manages the private grid state, executes final validated moves, and handles turn flags.
+* `Move_generator.java`: Computes raw piece paths and acts as the threat radar scanning system for the King.
+* `Piece.java`: Defines unique integer IDs for pieces and handles team color logic.
 3. Piece.java  
    - Contains all pieces (white and black) and board arrangement logic.
 
