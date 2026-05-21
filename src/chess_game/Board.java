@@ -55,9 +55,9 @@ public class Board {
 		grid[0][5] = Piece.b_bishop;
 
 	}
-	
-	public void setPieceAt(int row , int col , int value) {
-		this.grid[row][col]=value;   //Just for testing by placing a piece manually because grid is private
+
+	public void setPieceAt(int row, int col, int value) {
+		this.grid[row][col] = value; // Just for testing by placing a piece manually because grid is private
 	}
 
 	/*
@@ -90,6 +90,7 @@ public class Board {
 						grid[target_row][target_col] = temp;
 						grid[current_row][current_col] = 0;
 						this.flag *= -1;
+						checkDetection();
 						return;
 					}
 				}
@@ -144,4 +145,71 @@ public class Board {
 
 	}
 
+	// Now a method to detect whether the game is over (checkamate) ,draw
+	// (stalemate) , there is any chance to continue
+
+	public int checkDetection() {
+		int king_row = -1;
+		int king_col = -1;
+
+		// Scan the whole board to locate king
+
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				if ((this.flag > 0 && this.grid[i][j] == 6) || (this.flag < 0 && this.grid[i][j] == -6)) {
+					// This logic says the current flag number which is color and king color is
+					// matching or not
+
+					// Update the king position
+					king_row = i;
+					king_col = j;
+					break; // Because when located no need of scanning
+				}
+			}
+
+		}
+		boolean kingIsSafe = move_gen.isKingSafe(grid, king_row, king_col, this.flag);
+		boolean legalMoves = false; // Initialzing with false any present it will changed to true
+
+		// Now scan the piece of same color as king on the board because with that piece
+		// king might be protected
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				int piece = this.grid[i][j];
+				if ((piece > 0 && this.flag > 0) || (piece < 0 && this.flag < 0)) { // Make sure they are same color
+					ArrayList<int[]> saving_moves = move_gen.getMoves(this, i, j);
+					// This arraylist to store the all legal moves of that piece
+
+					for (int[] move : saving_moves) { // extracts all legal ones
+						int target_row = move[0];
+						int target_col = move[1];
+
+						/*
+						 * Pass this targets to ghostCheck() if it returns true change legalMoves to
+						 * true because there exists a move that can save king
+						 */
+						if (ghostCheck(i, j, target_row, target_col, move_gen)) {
+							legalMoves = true;
+							break; // Because there exsits something so do that }
+						}
+
+					}
+				}
+				if (legalMoves)
+					break; // Breaking outer for to reduce computation time
+			}
+			if (legalMoves)
+				break;
+
+		}
+		if (!legalMoves) {
+			if (!kingIsSafe) {
+				return 0; // Checkmate
+			}
+			return 1; // Stalemate
+
+		}
+		return 2; // Continue has moves
+
+	}
 }
