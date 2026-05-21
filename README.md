@@ -26,7 +26,7 @@ A lightweight, object-oriented chess backend engine written in Java. The engine 
 * [View all original handwritten engineering notes and vector layout sheets directly in the repository gallery.](https://github.com/Abishe77/Chess-engine-java/tree/main/docs)
 
 ## Working on
-GUI
+GUI ,
 AI - Minimax (Alpha-beta Pruning)
   
 
