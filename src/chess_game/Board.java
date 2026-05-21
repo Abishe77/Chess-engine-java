@@ -55,6 +55,10 @@ public class Board {
 		grid[0][5] = Piece.b_bishop;
 
 	}
+	
+	public void setPieceAt(int row , int col , int value) {
+		this.grid[row][col]=value;   //Just for testing by placing a piece manually because grid is private
+	}
 
 	/*
 	 * Since grid[][] is private this cannot be used in move gen class so create a
@@ -71,21 +75,72 @@ public class Board {
 	public void makeMove(Board board, int current_row, int current_col, int target_row, int target_col) {
 		ArrayList<int[]> moves = move_gen.getMoves(board, current_row, current_col);
 		for (int i = 0; i < moves.size(); i++) {
-			if (moves.get(i)[0] == target_row && moves.get(i)[1] == target_col) {
-				/*
-				 * Checking if the selected move is in Arraylist of the specific piece
-				 */
-				int temp = grid[current_row][current_col]; /*
-															 * Just teleport the element from current to target and make
-															 * current as zero and update the flag for alternate piece
-															 * color turn
-															 */
-				grid[target_row][target_col] = temp;
-				grid[current_row][current_col] = 0;
-				this.flag *= -1;
-				return;
+			if ((this.flag > 0 && Piece.isWhite(getPieceAt(current_row, current_col)))
+					|| (this.flag < 0 && Piece.isBlack(getPieceAt(current_row, current_col)))) {
+				if (moves.get(i)[0] == target_row && moves.get(i)[1] == target_col) {
+					/*
+					 * Checking if the selected move is in Arraylist of the specific piece
+					 */
+					if (ghostCheck(current_row, current_col, target_row, target_col, move_gen)) {
+						int temp = grid[current_row][current_col];
+						/*
+						 * Just teleport the element from current to target and make current as zero and
+						 * update the flag for alternate piece color turn
+						 */
+						grid[target_row][target_col] = temp;
+						grid[current_row][current_col] = 0;
+						this.flag *= -1;
+						return;
+					}
+				}
 			}
 		}
+
+	}
+
+	// Now creating a simulation board so that filtration becomes easier without
+	// collapsing original engine
+
+	public boolean ghostCheck(int current_row, int current_col, int target_row, int target_col,
+			Move_generator move_gen) {
+		int[][] ghost_board = new int[8][8];
+
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				ghost_board[i][j] = grid[i][j];
+			}
+		}
+		// Teleport logic
+		int current_piece = ghost_board[current_row][current_col];
+		ghost_board[target_row][target_col] = current_piece;
+		ghost_board[current_row][current_col] = 0;
+
+		// Check the flag
+		int current_flag = (current_piece > 0) ? 1 : -1;
+
+		// Now initial king position on ghost board and scan the board to find the
+		// location of the king
+		int king_row = -1;
+		int king_col = -1;
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				// Check if the piece is king
+				if (Math.abs(ghost_board[i][j]) == 6) {
+					if ((current_flag > 0 && ghost_board[i][j] > 0) || // Flag check if it the color is matching or not
+							(current_flag < 0 && ghost_board[i][j] < 0)) {
+
+						// if matches update king_row and king_col to i and j because it is the current
+						// position of king
+						king_row = i;
+						king_col = j;
+						break; // Because king is found no more looping is needed
+					}
+
+				}
+			}
+		}
+
+		return move_gen.isKingSafe(ghost_board, king_row, king_col, current_flag);
 
 	}
 

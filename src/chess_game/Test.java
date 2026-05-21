@@ -5,16 +5,16 @@ import java.util.ArrayList;
 
 public class Test {
 	public static void main(String[] args) {
+
 		Board board = new Board();
-		Move_generator generator = new Move_generator();
+		board.setPieceAt(5, 3, -3);
+		board.makeMove(board, 6, 4, 5, 3);
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				System.out.print(board.getPieceAt(i, j) + " ");
 
-		// Test a Knight in the middle of an empty board
-		int testRow = 4, testCol = 4;
-		ArrayList<int[]> knightMoves = generator.knightMoves(board, testRow, testCol);
-
-		System.out.println("--- TESTING KNIGHT MOVEMENTS ---");
-		for (int[] move : knightMoves) {
-			System.out.println("Can move to: Row " + move[0] + ", Col " + move[1]);
+			}
+			System.out.println();
 		}
 	}
 }

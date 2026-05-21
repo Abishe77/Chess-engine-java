@@ -285,4 +285,108 @@ public class Move_generator {
 		return piece_specific_possibilites;
 	}
 
+	/*
+	 * this method is used as radar for king just checking in all 8 directions up to
+	 * the end of the board (more likely queen moves is copied to king verification)
+	 * + knight jumps verification + pawn diagonal verification , ignoring if the
+	 * piece is king of different color because a king cannot make another king
+	 * check
+	 */
+	public boolean isKingSafe(int board[][], int king_row, int king_col, int current_flag) {
+		int[][] ray_offsets = { { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 }, { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
+
+		for (int i = 0; i < 8; i++) {
+			int row_offset = ray_offsets[i][0];
+			int col_offset = ray_offsets[i][1]; // this two takes each one from ray_offsets
+
+			int move_row = row_offset + king_row;
+			int move_col = col_offset + king_col; // this two line checks 8 directions from kings coordinate
+			int step = 1; // to look for pawn
+
+			// Boundary check for ray scans
+			while (move_row >= 0 && move_row < 8 && move_col >= 0 && move_col < 8) {
+				int piece = board[move_row][move_col]; // keeps track of current scanning piece
+
+				if (piece != 0) { // There exists a piece at current scanning position
+					if ((current_flag > 0 && piece > 0) || (current_flag < 0 && piece < 0)) { // friendly piece check if
+																								// yes just break
+						break;
+					}
+					// If not a friendly piece must be enemy piece so check the piece value
+					int abs_piece = Math.abs(piece); // Just to reduce complexity we neutralize the sign of pieces
+					boolean isdiagonal = (Math.abs(row_offset) == 1 && Math.abs(col_offset) == 1);
+
+					/*
+					 * This boolean isdiagonal is created to check if there is any attack only from
+					 * diagonal that is from bishop (3) or diagonally moving queen (5) because
+					 * diagonal offsets are always in terms of 1 and 1 no zeros
+					 */
+					if (isdiagonal) {
+						if (abs_piece == 3 || abs_piece == 5) { // queen or bishop is found
+							return false;
+						}
+
+						// Now checking for pawn color is important for pawn
+						if (abs_piece == 1 && step == 1) {
+							if (current_flag > 0 && row_offset == -1 && (col_offset == 1 || col_offset == -1)) {
+								// This 'if' is white king turn checking for black pawn check
+								return false;
+							}
+							if (current_flag < 0 && row_offset == 1 && (col_offset == 1 || col_offset == -1)) {
+								// this 'if' is black king turn checking for white pawn check
+								return false;
+							}
+						}
+					} else {
+						// now checking if it is rook(4) or straight moving queen(5)
+						if (abs_piece == 4 || abs_piece == 5) {
+							return false;
+						}
+					}
+					break; // safety break for in case if it finds a knight
+
+				}
+				move_row += row_offset;
+				move_col += col_offset;
+				step++;
+
+			}
+
+		}
+
+		// checking for knight separately because it is not a sliding piece but a
+		// jumping piece so create separate one this
+		int[][] jump_offsets = { { -1, -2 }, { -1, 2 }, { 1, -2 }, { 1, 2 }, { -2, 1 }, { 2, -1 }, { 2, 1 },
+				{ -2, -1 } };
+		for (int i = 0; i < 8; i++) {
+			int row_offset = jump_offsets[i][0];
+			int col_offset = jump_offsets[i][1];
+
+			int move_row = row_offset + king_row;
+			int move_col = col_offset + king_col;
+
+			// Boundary check of existing piece , since it is not sliding use if instead of
+			// while
+			if (move_row >= 0 && move_row < 8 && move_col >= 0 && move_col < 8) {
+				int piece = board[move_row][move_col];
+
+				if (piece != 0) {
+					if ((current_flag > 0 && piece > 0) || (current_flag < 0 && piece < 0)) {
+						continue; //Skips if the piece is friendly just a safety check
+					}
+					int abs_piece = Math.abs(piece);
+
+					if (abs_piece == 2) {
+						if ((current_flag > 0 && piece < 0) || (current_flag < 0 && piece > 0)) {
+							// same logic check the color difference
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
+
+	}
+
 }
