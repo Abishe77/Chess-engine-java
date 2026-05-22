@@ -7,6 +7,16 @@ public class Board {
 
 	// Create a object of Move_generator class here so that makeMove() can call
 	// getMoves() from the move gen class
+	// Add these at the top of your Board class
+	private int selectedRow = -1;
+	private int selectedCol = -1;  //Used for GUI
+	private ArrayList<int[]> currentValidMoves = new ArrayList<>();
+	private int checkKingRow = -1;
+	private int checkKingCol = -1;
+
+	
+	
+	
 
 	private Move_generator move_gen = new Move_generator();
 
@@ -56,6 +66,22 @@ public class Board {
 
 	}
 
+	// Create a method called executeMove() to interact the usermove with GUI
+	// without taking a lot of computation
+	public void executeMove(int current_row, int current_col, int target_row, int target_col) {
+		// Just swap the pieces so that GUI can track it easily
+
+		/*
+		 * The another main purpose of this is , this chess game gonna contain two types
+		 * 2 player and AI so it is useful to create a method beforehand
+		 */
+		int temp = grid[current_row][current_col];
+		grid[target_row][target_col] = temp;
+		grid[current_row][current_col] = 0;
+		this.flag *= -1;
+		checkDetection();
+	}
+
 	public void setPieceAt(int row, int col, int value) {
 		this.grid[row][col] = value; // Just for testing by placing a piece manually because grid is private
 	}
@@ -82,16 +108,10 @@ public class Board {
 					 * Checking if the selected move is in Arraylist of the specific piece
 					 */
 					if (ghostCheck(current_row, current_col, target_row, target_col, move_gen)) {
-						int temp = grid[current_row][current_col];
-						/*
-						 * Just teleport the element from current to target and make current as zero and
-						 * update the flag for alternate piece color turn
-						 */
-						grid[target_row][target_col] = temp;
-						grid[current_row][current_col] = 0;
-						this.flag *= -1;
-						checkDetection();
+
+						executeMove(current_row, current_col, target_row, target_col);
 						return;
+
 					}
 				}
 			}
@@ -202,14 +222,60 @@ public class Board {
 				break;
 
 		}
+		if (!kingIsSafe) {
+	        this.checkKingRow = king_row;
+	        this.checkKingCol = king_col;
+	    } else {
+	        this.checkKingRow = -1; // Reset if not in check
+	        this.checkKingCol = -1;
+	    }
 		if (!legalMoves) {
 			if (!kingIsSafe) {
 				return 0; // Checkmate
 			}
 			return 1; // Stalemate
+			
 
 		}
 		return 2; // Continue has moves
 
 	}
+	
+	public void handleInput(int row, int col) {
+	    if (selectedRow == -1) {
+	        // Selection Logic  Ensure it's the right turn!
+	        int piece = getPieceAt(row, col);
+	        if (piece != 0) {
+	            // Check if player is picking their own color
+	            if ((flag > 0 && piece > 0) || (flag < 0 && piece < 0)) {
+	                selectedRow = row;
+	                selectedCol = col;
+	                updateValidMoves(row, col);
+	                System.out.println("Piece selected at " + row + "," + col);
+	            }
+	        }
+	    } else {
+	    	makeMove(this, selectedRow, selectedCol, row, col);
+	        selectedRow = -1;
+	        selectedCol = -1;
+	        currentValidMoves.clear();
+	    }
+	}
+	public void updateValidMoves(int row, int col) {
+	    currentValidMoves = move_gen.getMoves(this, row, col);
+	    // Filter moves only keep those that keep the king safe
+	    currentValidMoves.removeIf(move -> !ghostCheck(row, col, move[0], move[1], move_gen));
+	}
+	
+	
+	public ArrayList<int[]> getCurrentValidMoves() { 
+	    return this.currentValidMoves; 
+	}
+	public int getCheckKingRow() { 
+	    return this.checkKingRow; 
+	}
+	public int getCheckKingCol() { 
+	    return this.checkKingCol; 
+	}
+
 }

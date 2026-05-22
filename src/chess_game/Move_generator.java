@@ -355,7 +355,7 @@ public class Move_generator {
 		}
 
 		// checking for knight separately because it is not a sliding piece but a
-		// jumping piece so create separate one this
+		// jumping piece so create separate one 
 		int[][] jump_offsets = { { -1, -2 }, { -1, 2 }, { 1, -2 }, { 1, 2 }, { -2, 1 }, { 2, -1 }, { 2, 1 },
 				{ -2, -1 } };
 		for (int i = 0; i < 8; i++) {
