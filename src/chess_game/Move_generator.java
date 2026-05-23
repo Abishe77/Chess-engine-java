@@ -3,6 +3,9 @@ package chess_game;
 import java.util.ArrayList;
 
 public class Move_generator {
+	
+	
+	
 
 	// Starting with knight because it is easier than other pieces
 
@@ -337,10 +340,17 @@ public class Move_generator {
 								return false;
 							}
 						}
+						if(abs_piece == 6 && step ==1) {
+							return false; //Checking opposite king one step diagonally
+						}
+						
 					} else {
 						// now checking if it is rook(4) or straight moving queen(5)
 						if (abs_piece == 4 || abs_piece == 5) {
 							return false;
+						}
+						else if(abs_piece ==6 && step ==1) {
+							return false; //Checking for opposite straight
 						}
 					}
 					break; // safety break for in case if it finds a knight
@@ -388,5 +398,6 @@ public class Move_generator {
 		return true;
 
 	}
+	
 
 }

@@ -9,14 +9,12 @@ public class Board {
 	// getMoves() from the move gen class
 	// Add these at the top of your Board class
 	private int selectedRow = -1;
-	private int selectedCol = -1;  //Used for GUI
+	private int selectedCol = -1; // Used for GUI
 	private ArrayList<int[]> currentValidMoves = new ArrayList<>();
 	private int checkKingRow = -1;
 	private int checkKingCol = -1;
-
-	
-	
-	
+	public int pendingPromotionRow = -1;
+	public int pendingPromotionCol = -1;
 
 	private Move_generator move_gen = new Move_generator();
 
@@ -78,7 +76,17 @@ public class Board {
 		int temp = grid[current_row][current_col];
 		grid[target_row][target_col] = temp;
 		grid[current_row][current_col] = 0;
-		this.flag *= -1;
+		
+		//Put pawn promotion here
+				if(Math.abs(temp) == 1 && (target_row == 0 || target_row == 7)) {
+				    // Instead of auto-promoting, trigger a state where GUI asks user
+				    this.pendingPromotionRow = target_row;
+				    this.pendingPromotionCol = target_col;
+				}
+				else{
+					this.flag *= -1;
+				}
+		
 		checkDetection();
 	}
 
@@ -223,59 +231,99 @@ public class Board {
 
 		}
 		if (!kingIsSafe) {
-	        this.checkKingRow = king_row;
-	        this.checkKingCol = king_col;
-	    } else {
-	        this.checkKingRow = -1; // Reset if not in check
-	        this.checkKingCol = -1;
-	    }
+			this.checkKingRow = king_row;
+			this.checkKingCol = king_col;
+		} else {
+			this.checkKingRow = -1; // Reset if not in check
+			this.checkKingCol = -1;
+		}
 		if (!legalMoves) {
 			if (!kingIsSafe) {
 				return 0; // Checkmate
 			}
 			return 1; // Stalemate
-			
 
 		}
 		return 2; // Continue has moves
 
 	}
-	
+
 	public void handleInput(int row, int col) {
-	    if (selectedRow == -1) {
-	        // Selection Logic  Ensure it's the right turn!
-	        int piece = getPieceAt(row, col);
-	        if (piece != 0) {
-	            // Check if player is picking their own color
-	            if ((flag > 0 && piece > 0) || (flag < 0 && piece < 0)) {
-	                selectedRow = row;
-	                selectedCol = col;
-	                updateValidMoves(row, col);
-	                System.out.println("Piece selected at " + row + "," + col);
-	            }
-	        }
-	    } else {
-	    	makeMove(this, selectedRow, selectedCol, row, col);
-	        selectedRow = -1;
-	        selectedCol = -1;
-	        currentValidMoves.clear();
-	    }
-	}
-	public void updateValidMoves(int row, int col) {
-	    currentValidMoves = move_gen.getMoves(this, row, col);
-	    // Filter moves only keep those that keep the king safe
-	    currentValidMoves.removeIf(move -> !ghostCheck(row, col, move[0], move[1], move_gen));
-	}
-	
-	
-	public ArrayList<int[]> getCurrentValidMoves() { 
-	    return this.currentValidMoves; 
-	}
-	public int getCheckKingRow() { 
-	    return this.checkKingRow; 
-	}
-	public int getCheckKingCol() { 
-	    return this.checkKingCol; 
+		if (selectedRow == -1) {
+			// Selection Logic Ensure it's the right turn!
+			int piece = getPieceAt(row, col);
+			if (piece != 0) {
+				// Check if player is picking their own color
+				if ((flag > 0 && piece > 0) || (flag < 0 && piece < 0)) {
+					selectedRow = row;
+					selectedCol = col;
+					updateValidMoves(row, col);
+					System.out.println("Piece selected at " + row + "," + col);
+				}
+			}
+		} else {
+			makeMove(this, selectedRow, selectedCol, row, col);
+			selectedRow = -1;
+			selectedCol = -1;
+			currentValidMoves.clear();
+		}
 	}
 
+	public void updateValidMoves(int row, int col) {
+		currentValidMoves = move_gen.getMoves(this, row, col);
+		// Filter moves only keep those that keep the king safe
+		currentValidMoves.removeIf(move -> !ghostCheck(row, col, move[0], move[1], move_gen));
+	}
+
+	public ArrayList<int[]> getCurrentValidMoves() {
+		return this.currentValidMoves;
+	}
+
+	public int getCheckKingRow() {
+		return this.checkKingRow;
+	}
+
+	public int getCheckKingCol() {
+		return this.checkKingCol;
+	}
+
+	public void promotePawn(int row, int col, int choice) { // Method to promote pawn when it reaches end
+
+		// Choosing pawn color
+		int color = (row == 0) ? 1 : -1; // If true then it is white pawn if not black pawn
+
+		switch (choice) {
+		case 1:
+			this.grid[row][col] = 5 * color;
+			this.flag*=-1;
+			break; // Queen
+		case 2:
+			this.grid[row][col] = 4 * color;
+			this.flag*=-1;
+			break; // Rook
+		case 3:
+			this.grid[row][col] = 3 * color;
+			this.flag*=-1;
+			break; // Bishop
+		case 4:
+			this.grid[row][col] = 2 * color;
+			this.flag*=-1;
+			break; // Knight
+
+		// If entered valid choice by default it will be into queen
+		default:
+			this.grid[row][col] = 5 * color;
+			this.flag*=-1;
+			break;
+
+		}
+
+	}
+	//Method for castling
+	/*Rules:
+	 * 1. King and either one of the rook should not be moved from the very start of the game
+	 * 2. When king moves and settles in that position there should not be any check there
+	 * 3.There should be no pieces in between so that this can happen
+	 */
+	
 }
