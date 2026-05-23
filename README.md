@@ -26,6 +26,7 @@ src/chess_game/
 ├── Move_generator.java  # Move logic for all pieces + isKingSafe() ray scanner
 ├── Piece.java           # Piece constants + isWhite(), isBlack(), isOpponent() helpers
 └── Test.java            # Manual test cases
+|__ GUI.java             #Interface of the game
 ```
 
 ---
@@ -70,8 +71,9 @@ All logic was planned by hand before coding. Notebook photos covering board layo
 - [x] Legal move filtering
 - [x] King safety (ray casting)
 - [x] Checkmate & stalemate detection
+- [x] GUI (Java Swing)
 - [ ] Minimax AI with Alpha-Beta pruning
-- [ ] GUI (Java Swing or JavaFX)
+
 
 ---
 
