@@ -70,8 +70,9 @@ All logic was planned by hand before coding. Notebook photos covering board layo
 - [x] Legal move filtering
 - [x] King safety (ray casting)
 - [x] Checkmate & stalemate detection
+- [x] GUI (Java Swing or JavaFX)
 - [ ] Minimax AI with Alpha-Beta pruning
-- [ ] GUI (Java Swing or JavaFX)
+
 
 ---
 
