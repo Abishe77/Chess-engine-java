@@ -26,6 +26,7 @@ src/chess_game/
 ├── Move_generator.java  # Move logic for all pieces + isKingSafe() ray scanner
 ├── Piece.java           # Piece constants + isWhite(), isBlack(), isOpponent() helpers
 └── Test.java            # Manual test cases
+|__ GUI.java             #Interface of the game
 ```
 
 ---
