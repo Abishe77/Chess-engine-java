@@ -1,199 +1,120 @@
-Chess Engine — Java 
+# Chess Engine — Java
 
-A scratch-built, object-oriented chess engine written entirely in Java — no external libraries, no premade engines, no shortcuts. Every system was implemented from first principles: board representation, legal move generation, king safety validation, checkmate detection, and a working Minimax AI with Alpha-Beta pruning.
+A scratch-built, object-oriented chess engine in Java. No libraries. No shortcuts. Pure logic.
 
-Built from a blank file using handwritten planning and algorithm design before implementation.
+Built from a blank file with handwritten planning — board representation, move generation, legal filtering, and checkmate detection all implemented from first principles.
 
-Features
-Core Chess Logic
-Full move generation for all 6 pieces
-Pawn
-Knight
-Bishop
-Rook
-Queen
-King
-Complete legal move validation
-Check detection
-Checkmate detection
-Stalemate detection
-Turn-based move enforcement
-Pawn promotion system
-Illegal move rejection
-AI Engine
-Minimax AI
+---
 
-Implemented a recursive Minimax search tree capable of evaluating future board states and selecting optimal moves.
+## Features
 
-Alpha-Beta Pruning
+- **Full Move Generation** — All 6 pieces: pawn, knight, bishop, rook, queen, king
 
-Optimized the Minimax traversal using Alpha-Beta pruning to eliminate unnecessary branches and drastically improve performance.
+- **Vector Offset Optimization** — Knight and king moves use 2D offset arrays instead of repetitive conditionals
 
-Heuristic Evaluation Function
+- **Ghost Board Simulation** — Every move is tested on a sandboxed copy of the board before execution
 
-Custom evaluation system using:
+- **Ray Casting (King Safety)** — 8-directional ray scan + knight jump pattern to detect check
 
-Material scoring
-Piece-square tables
-Positional bonuses
-Spatial control awareness
-Ghost Board Simulation
+- **Legal Move Filtering** — Moves that leave the king in check are silently rejected
 
-Every candidate move is simulated on a copied board before evaluation to avoid corrupting the real game state during recursion.
+- **Checkmate & Stalemate Detection** — Engine determines if the game is over after every move
 
-Engine Architecture
-Vector Offset Optimization
+- **Turn Management** — Flag-based system enforces alternating turns
 
-Knight and king movement use precomputed 2D offset arrays instead of repetitive conditionals.
+---
 
-Sliding Piece Ray Traversal
+## Project Structure
 
-Bishop, rook, and queen movement implemented using directional vectors and ray traversal loops.
+```
 
-King Safety Scanner
-
-Custom attack detection system using:
-
-8-directional ray casting
-Knight jump verification
-Pawn diagonal attack checks
-Opposing king proximity detection
-Legal Move Filtering
-
-Moves that expose the king are automatically filtered using sandboxed ghost simulations before execution.
-
-GUI
-
-Built using Java Swing.
-
-Features:
-
-Interactive chessboard
-Click-based movement
-Valid move highlighting
-Check indication
-AI vs Player mode
-Player vs Player mode
-Real-time board updates
-Promotion popup interface
-Project Structure
 src/chess_game/
 
-├── AI.java
-│   # Minimax AI, Alpha-Beta pruning, evaluation function
+├── Board.java           # 8x8 grid state, makeMove(), ghostCheck(), checkDetection()
 
-├── Board.java
-│   # Board state, move execution, ghost simulation,
-│   # checkmate/stalemate detection
+├── Move_generator.java  # Move logic for all pieces + isKingSafe() ray scanner
 
-├── Move_generator.java
-│   # Piece move generation + king safety scanner
+├── Piece.java           # Piece constants + isWhite(), isBlack(), isOpponent() helpers
 
-├── GUI.java
-│   # Java Swing interface and event handling
+└── Test.java            # Manual test cases
 
-├── Piece.java
-│   # Piece constants and helper utilities
+|__ GUI.java             #Interface of the game
 
-└── Test.java
-    # Manual testing
-Board Representation
+|___AI.java.             #The AI brain
 
-The chessboard is represented using an 8x8 int[][] grid.
+```
 
-White Pieces  -> Positive Integers
-Black Pieces  -> Negative Integers
-Empty Square  -> 0
-Pawn   = 1
-Knight = 2
-Bishop = 3
-Rook   = 4
-Queen  = 5
-King   = 6
-How Legal Move Validation Works
-Generate pseudo-legal moves
-Clone the current board
-Simulate the move on the cloned board
-Locate the current player's king
-Run king safety verification
-Reject the move if king becomes exposed
+---
 
-This prevents:
+## How It Works
 
-Moving into check
-Ignoring checks
-Illegal king movement
-Pinned piece violations
-Check Detection
+### Board Representation
 
-The engine scans from the king’s position using directional rays.
+The board is an 8x8 `int[][]` grid. Positive integers = white pieces, negative = black, zero = empty.
 
-Threats detected:
+```
 
-Rook attacks
-Bishop attacks
-Queen attacks
-Pawn attacks
-Knight jumps
-Adjacent enemy king
-Endgame Detection
+Pawn=1, Knight=2, Bishop=3, Rook=4, Queen=5, King=6
 
-checkDetection() determines game state after every move:
+```
 
-State	Return Value
-Checkmate	0
-Stalemate	1
-Normal Play	2
-AI Search Strategy
+### Move Generation
 
-The engine recursively explores future positions using:
+Each piece has a dedicated method returning `ArrayList<int[]>` of valid target positions. Sliding pieces (bishop, rook, queen) use `while` loops with direction offsets. Non-sliding pieces (knight, king) use precomputed offset arrays.
 
-Minimax(depth)
-├── Max Player (AI)
-└── Min Player (Opponent)
+### Legal Move Filtering
 
-Optimized with:
+Before any move executes, `ghostCheck()` clones the board, simulates the move, locates the current player's king, and calls `isKingSafe()`. If the king is exposed, the move is rejected.
 
-Alpha-Beta pruning
-Move simulation
-Recursive board evaluation
-Built With
-Java
-Java Swing
-Eclipse IDE
-Handwritten algorithm planning
-Design Philosophy
+### Check Detection
 
-This project was intentionally built without chess libraries or engine frameworks to deeply understand:
+`isKingSafe()` fires rays in all 8 directions from the king's position and checks for threatening pieces. Knights are handled separately using jump offsets.
 
-Game tree search
-Recursive algorithms
-Board state management
-AI heuristics
-Spatial evaluation
-Object-oriented engine design
-Roadmap
- Board representation
- Move generation
- Legal move filtering
- Check/checkmate detection
- GUI interface
- Minimax AI
- Alpha-Beta pruning
- Castling
- En passant
- Opening book
- Move ordering optimization
- Transposition tables
- Iterative deepening
- Zobrist hashing
-Preview
-Player Move → Legal Validation → Ghost Simulation
-→ Minimax Search → Alpha-Beta Pruning
-→ Best Move Selection → Board Update
-Author
+### Checkmate / Stalemate
 
-Built entirely from scratch as a deep dive into chess engine architecture, recursive AI systems, and low-level game logic implementation in Java.
+`checkDetection()` iterates over all friendly pieces, generates their legal moves, and runs each through `ghostCheck()`. If no legal move exists:
+
+- King is in check → **Checkmate** (returns `0`)
+
+- King is safe → **Stalemate** (returns `1`)
+
+- Legal moves exist → **Continue** (returns `2`)
+
+---
+
+## Design Blueprints
+
+All logic was planned by hand before coding. Notebook photos covering board layout, piece movement rules, attack patterns, ray casting, and ghost simulation are in [`/docs`](./docs).
+
+---
+
+## Roadmap
+
+- [x] Board representation
+
+- [x] Move generation (all 6 pieces)
+
+- [x] OOP refactor with vector offsets
+
+- [x] Legal move filtering
+
+- [x] King safety (ray casting)
+
+- [x] Checkmate & stalemate detection
+
+- [x] GUI (Java Swing)
+
+- [x] Minimax AI with Alpha-Beta pruning
+
+---
+
+## Built With
+
+- Java (no external libraries)
+
+- Eclipse IDE
+
+- A notebook and a pen
   
   
 
