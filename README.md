@@ -27,6 +27,7 @@ src/chess_game/
 ├── Piece.java           # Piece constants + isWhite(), isBlack(), isOpponent() helpers
 └── Test.java            # Manual test cases
 |__ GUI.java             #Interface of the game
+|___AI.java.             #The AI brain
 ```
 
 ---
@@ -72,7 +73,7 @@ All logic was planned by hand before coding. Notebook photos covering board layo
 - [x] King safety (ray casting)
 - [x] Checkmate & stalemate detection
 - [x] GUI (Java Swing)
-- [ ] Minimax AI with Alpha-Beta pruning
+- [x] Minimax AI with Alpha-Beta pruning
 
 
 ---
