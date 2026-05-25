@@ -63,10 +63,20 @@ public class Board {
 		grid[0][5] = Piece.b_bishop;
 
 	}
+	public Board copyBoard() {
+	    Board copy = new Board();
 
+	    for (int i = 0; i < 8; i++) {
+	        for (int j = 0; j < 8; j++) {
+	            copy.setPieceAt(i, j, this.grid[i][j]);
+	        }
+	    }
+
+	    return copy;
+	}
 	// Create a method called executeMove() to interact the usermove with GUI
 	// without taking a lot of computation
-	public void executeMove(int current_row, int current_col, int target_row, int target_col) {
+	public  void executeMove(int current_row, int current_col, int target_row, int target_col) {
 		// Just swap the pieces so that GUI can track it easily
 
 		/*
@@ -100,14 +110,15 @@ public class Board {
 	 * structured than normal no specific reasons
 	 */
 
-	public int getPieceAt(int row, int col) {
+	public  int getPieceAt(int row, int col) {
 		return this.grid[row][col];
 	}
 
 	private int flag = 1;
 
-	public void makeMove(Board board, int current_row, int current_col, int target_row, int target_col) {
+	public boolean makeMove(Board board, int current_row, int current_col, int target_row, int target_col) {
 		ArrayList<int[]> moves = move_gen.getMoves(board, current_row, current_col);
+		System.out.println("Checking " + moves.size() + " possible moves...");
 		for (int i = 0; i < moves.size(); i++) {
 			if ((this.flag > 0 && Piece.isWhite(getPieceAt(current_row, current_col)))
 					|| (this.flag < 0 && Piece.isBlack(getPieceAt(current_row, current_col)))) {
@@ -118,12 +129,13 @@ public class Board {
 					if (ghostCheck(current_row, current_col, target_row, target_col, move_gen)) {
 
 						executeMove(current_row, current_col, target_row, target_col);
-						return;
+						return true;
 
 					}
 				}
 			}
 		}
+		return false;
 
 	}
 
@@ -151,8 +163,9 @@ public class Board {
 		// location of the king
 		int king_row = -1;
 		int king_col = -1;
-		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 8; j++) {
+		outerLoop:
+			for (int i = 0; i < 8; i++) {
+			    for (int j = 0; j < 8; j++) {
 				// Check if the piece is king
 				if (Math.abs(ghost_board[i][j]) == 6) {
 					if ((current_flag > 0 && ghost_board[i][j] > 0) || // Flag check if it the color is matching or not
@@ -162,7 +175,7 @@ public class Board {
 						// position of king
 						king_row = i;
 						king_col = j;
-						break; // Because king is found no more looping is needed
+						break outerLoop; // Because king is found no more looping is needed
 					}
 
 				}
@@ -248,25 +261,28 @@ public class Board {
 
 	}
 
-	public void handleInput(int row, int col) {
-		if (selectedRow == -1) {
-			// Selection Logic Ensure it's the right turn!
-			int piece = getPieceAt(row, col);
-			if (piece != 0) {
-				// Check if player is picking their own color
-				if ((flag > 0 && piece > 0) || (flag < 0 && piece < 0)) {
-					selectedRow = row;
-					selectedCol = col;
-					updateValidMoves(row, col);
-					System.out.println("Piece selected at " + row + "," + col);
-				}
-			}
-		} else {
-			makeMove(this, selectedRow, selectedCol, row, col);
-			selectedRow = -1;
-			selectedCol = -1;
-			currentValidMoves.clear();
-		}
+	public boolean handleInput(int row, int col) {
+	    if (selectedRow == -1) {
+	        int piece = getPieceAt(row, col);
+	        if (piece != 0) {
+	            if ((flag > 0 && piece > 0) || (flag < 0 && piece < 0)) {
+	                selectedRow = row;
+	                selectedCol = col;
+	                updateValidMoves(row, col);
+	                System.out.println("Piece selected at " + row + "," + col);
+	            }
+	        }
+	        return false; // Still selecting, no move made yet
+	    } else {
+	    	System.out.println("Attempting move from " + selectedRow + "," + selectedCol + " to " + row + "," + col);
+	    	boolean moved = makeMove(this, selectedRow, selectedCol, row, col);
+
+	    	selectedRow = -1;
+	    	selectedCol = -1;
+	    	currentValidMoves.clear();
+
+	    	return moved; // Move successfully finished
+	    }
 	}
 
 	public void updateValidMoves(int row, int col) {

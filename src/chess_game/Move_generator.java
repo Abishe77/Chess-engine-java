@@ -253,11 +253,14 @@ public class Move_generator {
 		return possibilities;
 	}
 
-	public ArrayList<int[]> getMoves(Board board, int row, int col) {
+	public  ArrayList<int[]> getMoves(Board board, int row, int col) {
 
 		// This method is piece specific move generation when a piece is selected it
 		// just returns the moves for that piece
 		ArrayList<int[]> piece_specific_possibilites = new ArrayList<>();
+		if (board == null) return piece_specific_possibilites;
+	    
+	    
 		int temp = board.getPieceAt(row, col);
 		switch (Math.abs(temp)) {
 
