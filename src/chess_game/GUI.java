@@ -17,6 +17,7 @@ public class GUI extends JPanel implements MouseListener {
 	private boolean isVsAI = false; // Interface flag to switch the gameplay as AI mode vs 2 player mode
 
 	public GUI() {
+		System.out.println("GUI constructor started");
 		String[] options = { "Player vs Player", "Player vs AI" };
 		int choice = JOptionPane.showOptionDialog(null, "Select Mode", "Game Setup", JOptionPane.DEFAULT_OPTION,
 				JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
@@ -39,11 +40,30 @@ public class GUI extends JPanel implements MouseListener {
 	}
 
 	private void loadImages() {
-		String folderPath = "src/chess_game/Pieces/";
-		for (int i = 1; i <= 6; i++) {
-			pieceImages.put(i, new ImageIcon(folderPath + i + ".png").getImage());
-			pieceImages.put(-i, new ImageIcon(folderPath + "-" + i + ".png").getImage());
-		}
+
+	    System.out.println("Loading images...");
+	    System.out.println(System.getProperty("user.dir"));
+
+	    String folderPath = "Pieces/";
+
+	    for (int i = 1; i <= 6; i++) {
+
+	        try {
+
+	            pieceImages.put(i,
+	                new ImageIcon(folderPath + i + ".png").getImage());
+
+	            pieceImages.put(-i,
+	                new ImageIcon(folderPath + "-" + i + ".png").getImage());
+
+	            System.out.println("Loaded: " + i);
+
+	        } catch (Exception e) {
+
+	            System.err.println("Failed to load: " + i);
+	            e.printStackTrace();
+	        }
+	    }
 	}
 
 	@Override
@@ -158,6 +178,7 @@ public class GUI extends JPanel implements MouseListener {
 							f.printStackTrace(); // To check if AI is crashing
 						}
 						SwingUtilities.invokeLater(() -> {
+							repaint();
 							int gameState = board.checkDetection();
 
 							if (gameState == 0) {
@@ -167,7 +188,7 @@ public class GUI extends JPanel implements MouseListener {
 							    JOptionPane.showMessageDialog(this, "Stalemate!");
 							}
 
-							repaint();
+							
 							playerTurn = true;
 						});
 					}).start();
