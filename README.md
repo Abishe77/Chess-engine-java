@@ -101,7 +101,6 @@ Move generation uses **direction offset arrays** for each piece type:
 
 ## What's Next
 
-- [ ] GUI (Java Swing or JavaFX)
 - [ ] Iterative deepening with time management
 - [ ] Quiescence search (avoid horizon effect)
 - [ ] Move ordering (killer moves, history heuristic)
